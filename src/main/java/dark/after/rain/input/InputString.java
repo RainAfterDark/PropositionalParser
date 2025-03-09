@@ -4,7 +4,8 @@ public abstract class InputString {
     protected final String input;
 
     protected InputString(String input) {
-        this.input = input.trim().replaceAll("\\n", " ");
+        this.input = input.trim().toLowerCase()
+                .replaceAll("\\n", " ");
     }
 
     protected RuntimeException error(String message, int index) {
