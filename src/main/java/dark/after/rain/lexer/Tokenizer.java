@@ -45,15 +45,11 @@ public class Tokenizer extends InputString {
         int balance = 0;
         for (int i = 0; i < tokens.size(); i++) {
             Token token = tokens.get(i);
-            if (token.type() == TokenType.L_BLOCK) {
-                balance++;
-            } else if (token.type() == TokenType.R_BLOCK) {
-                balance--;
-            }
-            if (balance < 0) {
-                throw error("Invalid parentheses found!", i);
-            }
+            if (token.type() == TokenType.L_BLOCK) balance++;
+            else if (token.type() == TokenType.R_BLOCK) balance--;
+            if (balance < 0) throw error("Invalid parentheses!", i);
         }
+        if (balance != 0) throw error("Unclosed parentheses!", pos);
     }
 }
 
