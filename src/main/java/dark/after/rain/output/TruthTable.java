@@ -67,6 +67,7 @@ public class TruthTable extends InputString {
         }
         sb.append("\n");
 
+        boolean rootAllTrue = true;
         int rows = 1 << vars.size(); // 2^n
         int mask = rows - 1;
         for (int i = 0; i < rows; i++) {
@@ -85,8 +86,16 @@ public class TruthTable extends InputString {
                 boolean truth = expr.evaluate(context);
                 sb.append(String.format(
                         "%-" + length + "s ┃ ", boolToChar(truth)));
+                if (j == expressions.size() - 1 && !truth)
+                    rootAllTrue = false;
             }
             sb.append("\n");
+        }
+
+        if (root instanceof BinaryExpression binary
+            && binary.operator().type() == TokenType.EQUALS) {
+            sb.append("\nThe equation ").append(root).append(" is ")
+                    .append(rootAllTrue ? "TRUE" : "FALSE").append("\n");
         }
         return sb.toString();
     }

@@ -8,14 +8,10 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         while (true) {
-            System.out.print("Enter expression: ");
+            System.out.print("Enter expression (or empty to exit): ");
             String input = scanner.nextLine();
+            if (input.trim().isEmpty()) break;
             System.out.println(new TruthTable(input).generate());
-            System.out.print("Enter again? (y/n, default y): ");
-            String next = scanner.nextLine();
-            if (!next.isEmpty() &&
-                !next.equalsIgnoreCase("y"))
-                break;
         }
         scanner.close();
     }
