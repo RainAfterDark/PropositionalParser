@@ -27,7 +27,7 @@ public record UnaryExpression(Token operator, Expression operand)
                         new UnaryExpression(operator, left).simplify(),
                         Token.of('|'),
                         new UnaryExpression(operator, right).simplify());
-                System.out.println("De Morgan's: " + this + " -> " + deMorgan);
+                System.out.println("De Morgan's: " + simplified + " -> " + deMorgan);
                 return deMorgan;
             }
         }
@@ -40,7 +40,7 @@ public record UnaryExpression(Token operator, Expression operand)
                         new UnaryExpression(operator, left).simplify(),
                         Token.of('&'),
                         new UnaryExpression(operator, right).simplify());
-                System.out.println("De Morgan's: " + this + " -> " + deMorgan);
+                System.out.println("De Morgan's: " + simplified + " -> " + deMorgan);
                 return deMorgan;
             }
         }
@@ -49,7 +49,7 @@ public record UnaryExpression(Token operator, Expression operand)
         if (simplified instanceof UnaryExpression(Token operator1, Expression operand1)) {
             if (operator1.type() == TokenType.NOT) {
                 Expression doubleNeg = operand1.simplify();
-                System.out.println("Double Negation: " + this + " -> " + doubleNeg);
+                System.out.println("Double Negation: " + simplified + " -> " + doubleNeg);
                 return doubleNeg;
             }
         }
