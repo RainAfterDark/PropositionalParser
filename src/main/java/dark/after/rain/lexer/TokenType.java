@@ -12,6 +12,7 @@ public enum TokenType {
     R_BLOCK("\\)"),
     EOF("\0"),
     VARIABLE("[A-Za-z]"),
+    LITERAL("[01]"),
     SPACE("\\s");
 
     private final Pattern regex;

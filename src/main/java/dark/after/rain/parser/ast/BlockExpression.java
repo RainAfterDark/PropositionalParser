@@ -9,7 +9,19 @@ public record BlockExpression(Expression inner) implements Expression {
     }
 
     @Override
+    public Expression simplify() {
+        Expression simplified = inner.simplify();
+        if (simplified instanceof VariableExpression ||
+                simplified instanceof LiteralExpression)
+            return simplified;
+        return new BlockExpression(simplified);
+    }
+
+    @Override
     public String toString() {
+        if (inner instanceof VariableExpression ||
+                inner instanceof LiteralExpression)
+            return inner.toString();
         return String.format("(%s)", inner);
     }
 }

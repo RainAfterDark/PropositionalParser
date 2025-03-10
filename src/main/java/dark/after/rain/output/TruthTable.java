@@ -34,7 +34,7 @@ public class TruthTable extends InputString {
                 exprSet.add(binary);
             }
             case BlockExpression block -> traverse(block.inner(), exprSet);
-            case VariableExpression _ -> {}
+            case VariableExpression _, LiteralExpression _ -> {}
             case null, default -> throw new
                     RuntimeException("Unexpected expression type: " + expr);
         }
@@ -67,15 +67,15 @@ public class TruthTable extends InputString {
         }
         sb.append("\n");
 
-        boolean rootAllTrue = true;
+        boolean tautology = true;
+        boolean contradiction = true;
         int rows = 1 << vars.size(); // 2^n
-        int mask = rows - 1;
-        for (int i = 0; i < rows; i++) {
+        for (int i = rows - 1; i >= 0; i--) {
             sb.append("┃ ");
             Map<Character, Boolean> context = new HashMap<>();
-            for (int j = vars.size() - 1; j >= 0; j--) {
-                int digit = 1 << j; // 2^j
-                boolean truth = ((i ^ mask) & digit) == digit;
+            for (int j = 0; j < vars.size(); j++) {
+                int digit = vars.size() - j - 1;
+                boolean truth = ((i >> digit) & 1) == 1;
                 context.put(vars.get(j), truth);
                 sb.append(boolToChar(truth)).append(" ");
             }
@@ -86,17 +86,19 @@ public class TruthTable extends InputString {
                 boolean truth = expr.evaluate(context);
                 sb.append(String.format(
                         "%-" + length + "s ┃ ", boolToChar(truth)));
-                if (j == expressions.size() - 1 && !truth)
-                    rootAllTrue = false;
+                if (j == expressions.size() - 1) {
+                    if (!truth) tautology = false;
+                    else contradiction = false;
+                }
+
             }
             sb.append("\n");
         }
 
-        if (root instanceof BinaryExpression binary
-            && binary.operator().type() == TokenType.EQUALS) {
-            sb.append("\nThe equation ").append(root).append(" is ")
-                    .append(rootAllTrue ? "TRUE" : "FALSE").append("\n");
-        }
+        sb.append("The expression is a ");
+        if (tautology) sb.append("tautology");
+        else if (contradiction) sb.append("contradiction");
+        else sb.append("contingency");
         return sb.toString();
     }
 }

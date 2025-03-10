@@ -18,4 +18,8 @@ public record Token(TokenType type, char value, int index) {
     public int hashCode() {
         return Objects.hash(type(), value());
     }
+
+    public static Token of(char value) {
+        return new Token(TokenType.valueOf(value), value, -1);
+    }
 }

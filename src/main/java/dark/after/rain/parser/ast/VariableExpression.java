@@ -9,6 +9,11 @@ public record VariableExpression(char name) implements Expression {
     }
 
     @Override
+    public Expression simplify() {
+        return this;
+    }
+
+    @Override
     public String toString() {
         return String.valueOf(name);
     }

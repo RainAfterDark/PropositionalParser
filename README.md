@@ -9,7 +9,11 @@ from propositional logic expressions in Java.
 
 ## How to Use
 
-Simply enter a valid expression to evaluate.
+Enter `?` to display the help menu.
+
+Simply enter a valid expression, and it will generate a truth table for it.
+Prefix with `$` to just simplify the expression (experimental). 
+`$!` to also generate a truth table for it.
 
 Logical operators are expressed as follows:
 
@@ -20,6 +24,7 @@ Logical operators are expressed as follows:
 - Biconditional / Equality = `=`
 
 Variables can be any letter, `A-Z`, case-**insensitive**.
+Literals (T or F) are represented as `1` or `0`, respectively.
 
 ## Parser
 

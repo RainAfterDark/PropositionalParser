@@ -4,4 +4,5 @@ import java.util.Map;
 
 public interface Expression {
     boolean evaluate(Map<Character, Boolean> context);
+    Expression simplify();
 }

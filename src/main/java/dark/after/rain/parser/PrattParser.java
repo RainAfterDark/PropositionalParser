@@ -44,6 +44,7 @@ public class PrattParser extends Parser {
     private Expression nud(Token token) {
         return switch (token.type()) {
             case VARIABLE -> new VariableExpression(token.value());
+            case LITERAL -> new LiteralExpression(token.value());
             case NOT -> new UnaryExpression(token,
                     parseExpression(getBindingPower(token.type())));
             case L_BLOCK -> {

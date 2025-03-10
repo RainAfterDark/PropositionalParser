@@ -5,7 +5,6 @@ import dark.after.rain.lexer.TokenType;
 import dark.after.rain.parser.ast.*;
 
 // Recursive Descent Parser
-@SuppressWarnings("unused")
 public class RDParser extends Parser {
     private int pos = 0;
 
@@ -50,6 +49,8 @@ public class RDParser extends Parser {
     private Expression parsePrimary() {
         if (match(TokenType.VARIABLE)) {
             return new VariableExpression(previous().value());
+        } else if (match(TokenType.LITERAL)) {
+            return new LiteralExpression(previous().value());
         } else if (match(TokenType.L_BLOCK)) {
             Expression expr = new BlockExpression(parseEquality());
             expect(TokenType.R_BLOCK);

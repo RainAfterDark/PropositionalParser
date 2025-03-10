@@ -16,6 +16,48 @@ public record UnaryExpression(Token operator, Expression operand)
     }
 
     @Override
+    public Expression simplify() {
+        Expression simplified = operand.simplify();
+
+        // De Morgan's Law: ~(p & q) = ~p | ~q
+        if (simplified instanceof BlockExpression(Expression inner) &&
+                inner instanceof BinaryExpression(Expression left, Token operator1, Expression right)) {
+            if (operator1.type() == TokenType.AND && operator.type() == TokenType.NOT) {
+                Expression deMorgan = new BinaryExpression(
+                        new UnaryExpression(operator, left).simplify(),
+                        Token.of('|'),
+                        new UnaryExpression(operator, right).simplify());
+                System.out.println("De Morgan's: " + this + " -> " + deMorgan);
+                return deMorgan;
+            }
+        }
+
+        // De Morgan's Law: ~(p | q) = ~p & ~q
+        if (simplified instanceof BlockExpression(Expression inner) &&
+                inner instanceof BinaryExpression(Expression left, Token operator1, Expression right)) {
+            if (operator1.type() == TokenType.OR && operator.type() == TokenType.NOT) {
+                Expression deMorgan = new BinaryExpression(
+                        new UnaryExpression(operator, left).simplify(),
+                        Token.of('&'),
+                        new UnaryExpression(operator, right).simplify());
+                System.out.println("De Morgan's: " + this + " -> " + deMorgan);
+                return deMorgan;
+            }
+        }
+
+        // Double Negation Law: ~~p = p
+        if (simplified instanceof UnaryExpression(Token operator1, Expression operand1)) {
+            if (operator1.type() == TokenType.NOT) {
+                Expression doubleNeg = operand1.simplify();
+                System.out.println("Double Negation: " + this + " -> " + doubleNeg);
+                return doubleNeg;
+            }
+        }
+
+        return new UnaryExpression(operator, simplified);
+    }
+
+    @Override
     public String toString() {
         return String.format("%s%s", operator, operand);
     }
