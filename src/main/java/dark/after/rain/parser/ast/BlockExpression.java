@@ -9,12 +9,12 @@ public record BlockExpression(Expression inner) implements Expression {
     }
 
     @Override
-    public Expression simplify() {
-        Expression simplified = inner.simplify();
-        if (simplified instanceof VariableExpression ||
-                simplified instanceof LiteralExpression)
-            return simplified;
-        return new BlockExpression(simplified);
+    public Expression reduce(ReductionStep step) {
+        Expression reduced = inner.reduce(step);
+        if (reduced instanceof VariableExpression ||
+                reduced instanceof LiteralExpression)
+            return reduced;
+        return new BlockExpression(reduced);
     }
 
     @Override

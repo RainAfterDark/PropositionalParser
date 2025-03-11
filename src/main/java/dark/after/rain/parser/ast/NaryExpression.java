@@ -1,0 +1,169 @@
+package dark.after.rain.parser.ast;
+
+import dark.after.rain.lexer.Token;
+import dark.after.rain.lexer.TokenType;
+
+import java.util.*;
+import java.util.stream.Stream;
+
+public record NaryExpression(Token operator, List<Expression> operands) implements Expression {
+    @Override
+    public boolean evaluate(Map<Character, Boolean> context) {
+        return switch (operator.type()) {
+            case AND -> operands.stream().allMatch(e -> e.evaluate(context));
+            case OR -> operands.stream().anyMatch(e -> e.evaluate(context));
+            default -> throw new RuntimeException("Unexpected operator: " + operator);
+        };
+    }
+
+    // Identity:
+    // p & 1 = p
+    // p | 0 = p
+    private Expression reduceIdentity(Expression rNary, List<Expression> rOps) {
+         char identity = operator.type() == TokenType.AND ? '1' : '0';
+        if (rOps.contains(new LiteralExpression(identity))) {
+            Expression r = new NaryExpression(operator, rOps.stream()
+                    .filter(e -> !e.equals(new LiteralExpression(identity)))
+                    .toList());
+            System.out.println("Identity: " + rNary + " -> " + r);
+            return r;
+        }
+        return null;
+    }
+
+    // Domination:
+    // p & 0 = 0
+    // p | 1 = 1
+    private Expression reduceDomination(Expression rNary, List<Expression> rOps) {
+        char dominator = operator.type() == TokenType.AND ? '0' : '1';
+        if (rOps.contains(new LiteralExpression(dominator))) {
+            Expression r = new LiteralExpression(dominator);
+            System.out.println("Domination: " + rNary + " -> " + r);
+            return r;
+        }
+        return null;
+    }
+
+    // Negation:
+    // p & ~p = 0
+    // p | ~p = 1
+    private Expression reduceNegation(Expression rNary, List<Expression> rOps) {
+        char value = operator.type() == TokenType.AND ? '0' : '1';
+        for (Expression e : rOps) {
+            for (Expression f : rOps) {
+                if (e.equals(f)) continue;
+                if (f instanceof UnaryExpression(Token op, Expression operand)
+                        && op.type() == TokenType.NOT && operand.equals(e)) {
+                    List<Expression> negated = new ArrayList<>(rOps);
+                    negated.remove(e);
+                    negated.remove(f);
+                    negated.add(new LiteralExpression(value));
+                    Expression r = new NaryExpression(operator,
+                            Collections.unmodifiableList(negated));
+                    System.out.println("Negation: " + rNary + " -> " + r);
+                    return r;
+                }
+            }
+        }
+        return null;
+    }
+
+    // Absorption:
+    // p & (p | q) = p
+    // p | (p & q) = p
+    private Expression reduceAbsorption(Expression rNary, List<Expression> rOps) {
+        TokenType innerOp = operator.type() == TokenType.AND ? TokenType.OR : TokenType.AND;
+        for (Expression e : rOps) {
+            for (Expression f : rOps) {
+                if (e.equals(f)) continue;
+                if (f instanceof BlockExpression(Expression inner) &&
+                        inner instanceof NaryExpression(Token op, List<Expression> ops)
+                        && op.type() == innerOp && ops.contains(e)) {
+                    List<Expression> unAbsorbed = new ArrayList<>(rOps);
+                    unAbsorbed.remove(f);
+                    Expression r = new NaryExpression(operator,
+                            Collections.unmodifiableList(unAbsorbed));
+                    System.out.println("Absorption: " + rNary + " -> " + r);
+                    return r;
+                }
+            }
+        }
+        return null;
+    }
+
+    // Distribution:
+    // (p | q) & (p | r) = p | (q & r)
+    // (p & q) | (p & r) = p & (q | r)
+    private Expression reduceDistribution(Expression rNary, List<Expression> rOps) {
+        char outerOp = operator.type() == TokenType.AND ? '&' : '|';
+        for (Expression e : rOps) {
+            for (Expression f : rOps) {
+                if (e.equals(f)) continue;
+                if (e instanceof BlockExpression(Expression inner1) &&
+                        inner1 instanceof NaryExpression(Token op1, List<Expression> ops1) &&
+                        f instanceof BlockExpression(Expression inner2) &&
+                        inner2 instanceof NaryExpression(Token op2, List<Expression> ops2) &&
+                        op1.type() == op2.type()) {
+                    Expression distributed = null;
+                    for (Expression g : ops1) {
+                        for (Expression h : ops2) {
+                            if (g.equals(h)) {
+                                distributed = g;
+                                break;
+                            }
+                        }
+                        if (distributed != null) break;
+                    }
+                    if (distributed == null) continue;
+                    Expression finalDistributed = distributed;
+                    List<Expression> onto = Stream.concat(ops1.stream(), ops2.stream())
+                            .filter(x -> !x.equals(finalDistributed)).toList();
+                    Expression r = new NaryExpression(Token.of(outerOp),
+                            List.of(distributed, new BlockExpression(new NaryExpression(op1, onto))));
+                    System.out.println("Distribution: " + rNary + " -> " + r);
+                    return r;
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Expression reduce(ReductionStep step) {
+        List<Expression> rOps = new ArrayList<>();
+        for (Expression e : operands) {
+            rOps.addAll(Expression.flatten(e.reduce(step), operator.type()));
+        }
+        rOps = rOps.stream()
+                .distinct()
+                .sorted(Comparator.comparing(e -> e.toString()
+                        .replaceAll("[^a-z]", "")))
+                .toList();
+
+        Expression rNary = new NaryExpression(operator, rOps);
+        Expression r;
+
+        if (rOps.size() < operands.size())
+            System.out.println("Idempotent: " + this + " -> " + rNary);
+
+        if (rOps.size() == 1)
+            return rOps.getFirst();
+
+        if (operator.type() == TokenType.AND || operator.type() == TokenType.OR) {
+            if (step == ReductionStep.IDENTITY && (r = reduceIdentity(rNary, rOps)) != null) return r;
+            if (step == ReductionStep.DOMINATION && (r = reduceDomination(rNary, rOps)) != null) return r;
+            if (step == ReductionStep.NEGATION && (r = reduceNegation(rNary, rOps)) != null) return r;
+            if (step == ReductionStep.ABSORPTION && (r = reduceAbsorption(rNary, rOps)) != null) return r;
+            if (step == ReductionStep.DISTRIBUTIVE && (r = reduceDistribution(rNary, rOps)) != null) return r;
+        }
+
+        return rNary;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s",
+                String.join(" " + operator.value() + " ",
+                operands.stream().map(Object::toString).toList()));
+    }
+}

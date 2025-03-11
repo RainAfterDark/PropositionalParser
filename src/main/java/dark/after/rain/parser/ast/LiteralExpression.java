@@ -21,7 +21,7 @@ public record LiteralExpression(char value) implements Expression {
     }
 
     @Override
-    public Expression simplify() {
+    public Expression reduce(ReductionStep step) {
         return this;
     }
 

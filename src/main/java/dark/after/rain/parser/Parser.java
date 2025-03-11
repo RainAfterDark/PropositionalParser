@@ -6,7 +6,9 @@ import dark.after.rain.lexer.TokenType;
 import dark.after.rain.lexer.Tokenizer;
 import dark.after.rain.parser.ast.BlockExpression;
 import dark.after.rain.parser.ast.Expression;
+import dark.after.rain.parser.ast.ReductionStep;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Parser extends InputString {
@@ -24,13 +26,23 @@ public abstract class Parser extends InputString {
 
     public Expression parseReduced() {
         Expression expr = parse();
-        Expression simplified = expr.simplify();
-        while (!simplified.equals(expr)) {
-            expr = simplified;
-            simplified = expr.simplify();
-        }
-        if (simplified instanceof BlockExpression(Expression inner))
+        List<Expression> explored = new ArrayList<>();
+        do {
+            explored.add(expr);
+            expr = expr
+                    .reduce(ReductionStep.ASSOCIATIVE)
+                    .reduce(ReductionStep.DOUBLE_NEGATION)
+                    .reduce(ReductionStep.IDENTITY)
+                    .reduce(ReductionStep.DOMINATION)
+                    .reduce(ReductionStep.NEGATION)
+                    .reduce(ReductionStep.DE_MORGAN)
+                    .reduce(ReductionStep.IMPLICATION)
+                    //.reduce(ReductionStep.BICONDITIONAL)
+                    .reduce(ReductionStep.ABSORPTION)
+                    .reduce(ReductionStep.DISTRIBUTIVE);
+        } while (!explored.contains(expr));
+        if (expr instanceof BlockExpression(Expression inner))
             return inner;
-        return simplified;
+        return expr;
     }
 }

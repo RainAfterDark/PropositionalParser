@@ -9,7 +9,7 @@ public record VariableExpression(char name) implements Expression {
     }
 
     @Override
-    public Expression simplify() {
+    public Expression reduce(ReductionStep step) {
         return this;
     }
 

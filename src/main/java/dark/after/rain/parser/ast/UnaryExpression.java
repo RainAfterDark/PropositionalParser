@@ -3,6 +3,7 @@ package dark.after.rain.parser.ast;
 import dark.after.rain.lexer.Token;
 import dark.after.rain.lexer.TokenType;
 
+import java.util.List;
 import java.util.Map;
 
 public record UnaryExpression(Token operator, Expression operand)
@@ -16,45 +17,38 @@ public record UnaryExpression(Token operator, Expression operand)
     }
 
     @Override
-    public Expression simplify() {
-        Expression simplified = operand.simplify();
+    public Expression reduce(ReductionStep step) {
+        Expression reduced = operand.reduce(step);
 
-        // De Morgan's Law: ~(p & q) = ~p | ~q
-        if (simplified instanceof BlockExpression(Expression inner) &&
-                inner instanceof BinaryExpression(Expression left, Token operator1, Expression right)) {
-            if (operator1.type() == TokenType.AND && operator.type() == TokenType.NOT) {
-                Expression deMorgan = new BinaryExpression(
-                        new UnaryExpression(operator, left).simplify(),
-                        Token.of('|'),
-                        new UnaryExpression(operator, right).simplify());
-                System.out.println("De Morgan's: " + simplified + " -> " + deMorgan);
+        if (operator.type() == TokenType.NOT) {
+            // Double Negation Law: ~~p = p
+            if (step == ReductionStep.DOUBLE_NEGATION &&
+                    reduced instanceof UnaryExpression(Token operator1, Expression operand1)) {
+                if (operator1.type() == TokenType.NOT) {
+                    Expression r = operand1.reduce(step);
+                    System.out.println("Double Negation: " + this + " -> " + r);
+                    return r;
+                }
+            }
+
+            // De Morgan's Law:
+            // ~(p & q) = ~p | ~q
+            // ~(p | q) = ~p & ~q
+            if (step == ReductionStep.DE_MORGAN &&
+                    reduced instanceof BlockExpression(Expression inner) &&
+                    inner instanceof NaryExpression(Token op, List<Expression> ops) &&
+                    (op.type() == TokenType.AND || op.type() == TokenType.OR)) {
+                List<Expression> negated = ops.stream()
+                        .map(e -> (Expression) new UnaryExpression(operator, e))
+                        .toList();
+                Expression deMorgan = new NaryExpression(
+                        Token.of(op.type() == TokenType.AND ? '|' : '&'), negated);
+                System.out.println("De Morgan's: " + this + " -> " + deMorgan);
                 return deMorgan;
             }
         }
 
-        // De Morgan's Law: ~(p | q) = ~p & ~q
-        if (simplified instanceof BlockExpression(Expression inner) &&
-                inner instanceof BinaryExpression(Expression left, Token operator1, Expression right)) {
-            if (operator1.type() == TokenType.OR && operator.type() == TokenType.NOT) {
-                Expression deMorgan = new BinaryExpression(
-                        new UnaryExpression(operator, left).simplify(),
-                        Token.of('&'),
-                        new UnaryExpression(operator, right).simplify());
-                System.out.println("De Morgan's: " + simplified + " -> " + deMorgan);
-                return deMorgan;
-            }
-        }
-
-        // Double Negation Law: ~~p = p
-        if (simplified instanceof UnaryExpression(Token operator1, Expression operand1)) {
-            if (operator1.type() == TokenType.NOT) {
-                Expression doubleNeg = operand1.simplify();
-                System.out.println("Double Negation: " + simplified + " -> " + doubleNeg);
-                return doubleNeg;
-            }
-        }
-
-        return new UnaryExpression(operator, simplified);
+        return new UnaryExpression(operator, reduced);
     }
 
     @Override
