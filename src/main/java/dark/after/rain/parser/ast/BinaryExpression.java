@@ -47,19 +47,19 @@ public record BinaryExpression(Expression left, Token operator, Expression right
         if (step == ReductionStep.IMPLICATION && operator.type() == TokenType.IMPLIES) {
             Expression r = new BinaryExpression(
                     new UnaryExpression(Token.of('~'), reducedLeft),
-                    Token.of('|'), reducedRight).reduce(step);
+                    Token.of('|'), reducedRight);
             System.out.println("Implication: " + this + " -> " + r);
             return r;
         }
 
         // Biconditional: p = q = (p > q) & (q > p)
         if (step == ReductionStep.BICONDITIONAL && operator.type() == TokenType.EQUALS) {
-            Expression leftImplication = new BinaryExpression(reducedLeft,
-                    Token.of('>'), reducedRight).reduce(step);
-            Expression rightImplication = new BinaryExpression(reducedRight,
-                    Token.of('>'), reducedLeft).reduce(step);
-            Expression r = new BinaryExpression(leftImplication,
-                    Token.of('&'), rightImplication).reduce(step);
+            Expression leftImpl = new BlockExpression(new BinaryExpression(reducedLeft,
+                    Token.of('>'), reducedRight));
+            Expression rightImpl = new BlockExpression(new BinaryExpression(reducedRight,
+                    Token.of('>'), reducedLeft));
+            Expression r = new BinaryExpression(leftImpl,
+                    Token.of('&'), rightImpl);
             System.out.println("Biconditional: " + this + " -> " + r);
             return r;
         }

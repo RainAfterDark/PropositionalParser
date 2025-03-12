@@ -88,7 +88,10 @@ public abstract class ParserTest {
                 Arguments.of("p & (p & (p & p) & (p & p & p))", "p"),
 
                 // De Morgan's Law Test
-                Arguments.of("~(p & q & r)", "~p | ~q | ~r")
+                Arguments.of("~(p & q & r)", "~p | ~q | ~r"),
+
+                // Biconditional Test
+                Arguments.of("(~p | q) & (~q | p)", "p = q")
         );
     }
 }

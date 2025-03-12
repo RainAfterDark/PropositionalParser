@@ -12,6 +12,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Parser extends InputString {
+    private static final List<ReductionStep> REDUCTION_ORDER = List.of(
+            ReductionStep.ASSOCIATIVE,
+            ReductionStep.DOUBLE_NEGATION,
+            ReductionStep.IDENTITY,
+            ReductionStep.DOMINATION,
+            ReductionStep.NEGATION,
+            ReductionStep.DE_MORGAN,
+
+            ReductionStep.ABSORPTION,
+            ReductionStep.DISTRIBUTIVE,
+
+            ReductionStep.ASSOCIATIVE,
+            ReductionStep.DOUBLE_NEGATION,
+            ReductionStep.IDENTITY,
+            ReductionStep.DOMINATION,
+            ReductionStep.NEGATION,
+            ReductionStep.DE_MORGAN,
+
+            ReductionStep.IMPLICATION,
+            ReductionStep.BICONDITIONAL
+    );
+
     public final List<Token> tokens;
 
     protected Parser(String input) {
@@ -27,22 +49,22 @@ public abstract class Parser extends InputString {
     public Expression parseReduced() {
         Expression expr = parse();
         List<Expression> explored = new ArrayList<>();
-        do {
+        while (true) {
+            for (ReductionStep step : REDUCTION_ORDER) {
+                Expression reduced = expr.reduce(step);
+                if (reduced instanceof BlockExpression(Expression inner))
+                    reduced = inner;
+                expr = reduced;
+            }
+            System.out.println("Pass: " + expr);
+            if (explored.contains(expr)) {
+                return explored.stream().min((a, b) -> {
+                    int aLen = a.toString().length();
+                    int bLen = b.toString().length();
+                    return Integer.compare(aLen, bLen);
+                }).get();
+            }
             explored.add(expr);
-            expr = expr
-                    .reduce(ReductionStep.ASSOCIATIVE)
-                    .reduce(ReductionStep.DOUBLE_NEGATION)
-                    .reduce(ReductionStep.IDENTITY)
-                    .reduce(ReductionStep.DOMINATION)
-                    .reduce(ReductionStep.NEGATION)
-                    .reduce(ReductionStep.DE_MORGAN)
-                    .reduce(ReductionStep.IMPLICATION)
-                    //.reduce(ReductionStep.BICONDITIONAL)
-                    .reduce(ReductionStep.ABSORPTION)
-                    .reduce(ReductionStep.DISTRIBUTIVE);
-        } while (!explored.contains(expr));
-        if (expr instanceof BlockExpression(Expression inner))
-            return inner;
-        return expr;
+        }
     }
 }

@@ -128,6 +128,57 @@ public record NaryExpression(Token operator, List<Expression> operands) implemen
         return null;
     }
 
+    private Expression extractNotExpression(List<Expression> ops) {
+        for (Expression expr : ops) {
+            if (expr instanceof UnaryExpression(Token not, Expression operand) && not.type() == TokenType.NOT) {
+                return operand;
+            }
+        }
+        return null;
+    }
+
+    private Expression extractImplExpression(List<Expression> ops, Expression notExpr) {
+        for (Expression expr : ops) {
+            if (!expr.equals(new UnaryExpression(Token.of('~'), notExpr))) {
+                return expr;
+            }
+        }
+        return null;
+    }
+
+    // Biconditional:
+    // (~p | q) & (~q | p) = p = q
+    private Expression reduceBiconditional(Expression rNary, List<Expression> rOps) {
+        if (rOps.size() == 2 && operator.type() == TokenType.AND) {
+            Expression left = rOps.get(0);
+            Expression right = rOps.get(1);
+
+            if (left instanceof BlockExpression(Expression inner1) &&
+                    inner1 instanceof NaryExpression(Token op1, List<Expression> ops1) &&
+                    right instanceof BlockExpression(Expression inner2) &&
+                    inner2 instanceof NaryExpression(Token op2, List<Expression> ops2) &&
+                    op1.type() == TokenType.OR && op2.type() == TokenType.OR) {
+
+                if (ops1.size() == 2 && ops2.size() == 2) {
+                    Expression notLeft = extractNotExpression(ops1);
+                    Expression implLeft = extractImplExpression(ops1, notLeft);
+                    if (notLeft == null || implLeft == null) return null;
+
+                    Expression notRight = extractNotExpression(ops2);
+                    Expression implRight = extractImplExpression(ops2, notRight);
+                    if (notRight == null || implRight == null) return null;
+
+                    if (notLeft.equals(implRight) && notRight.equals(implLeft)) {
+                        Expression r = new BinaryExpression(notLeft, Token.of('='), notRight);
+                        System.out.println("Biconditional: " + rNary + " -> " + r);
+                        return r;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     @Override
     public Expression reduce(ReductionStep step) {
         List<Expression> rOps = new ArrayList<>();
@@ -141,7 +192,6 @@ public record NaryExpression(Token operator, List<Expression> operands) implemen
                 .toList();
 
         Expression rNary = new NaryExpression(operator, rOps);
-        Expression r;
 
         if (rOps.size() < operands.size())
             System.out.println("Idempotent: " + this + " -> " + rNary);
@@ -150,11 +200,16 @@ public record NaryExpression(Token operator, List<Expression> operands) implemen
             return rOps.getFirst();
 
         if (operator.type() == TokenType.AND || operator.type() == TokenType.OR) {
-            if (step == ReductionStep.IDENTITY && (r = reduceIdentity(rNary, rOps)) != null) return r;
-            if (step == ReductionStep.DOMINATION && (r = reduceDomination(rNary, rOps)) != null) return r;
-            if (step == ReductionStep.NEGATION && (r = reduceNegation(rNary, rOps)) != null) return r;
-            if (step == ReductionStep.ABSORPTION && (r = reduceAbsorption(rNary, rOps)) != null) return r;
-            if (step == ReductionStep.DISTRIBUTIVE && (r = reduceDistribution(rNary, rOps)) != null) return r;
+            Expression reduced = switch (step) {
+                case IDENTITY -> reduceIdentity(rNary, rOps);
+                case DOMINATION -> reduceDomination(rNary, rOps);
+                case NEGATION -> reduceNegation(rNary, rOps);
+                case ABSORPTION -> reduceAbsorption(rNary, rOps);
+                case DISTRIBUTIVE -> reduceDistribution(rNary, rOps);
+                case BICONDITIONAL -> reduceBiconditional(rNary, rOps);
+                default -> null;
+            };
+            if (reduced != null) return reduced;
         }
 
         return rNary;
