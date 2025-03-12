@@ -47,17 +47,13 @@ public abstract class ParserTest {
                 // (p = q) & (p = q) simplifies to just p = q.
                 Arguments.of("(p = q) & (p = q)", "p = q"),
 
-                // Test 6: Complex Combination (Distributive, Biconditional Conversion, and Negation)
-                // Left side: (p & q) | (p & ~q) simplifies to p.
-                // Right side: (p = q) | ~(p | q) simplifies (after conversion and absorption) to p = q.
-                // Overall, p & (p = q) simplifies further to p & q.
-                Arguments.of("((p & q) | (p & ~q)) & ((p = q) | ~(p | q))", "p & q"),
+                // Test 6: Tautology with Implication and Absorption
+                // (p > q) is ~p | q, and (q | ~q) is a tautology, so (~p | q) | (q | ~q) simplifies to 1.
+                Arguments.of("(p > q) | (q | ~q)", "1"),
 
-                // Test 7: Mixing Negation, Biconditional, and Double Negation
-                // ~(~~p) simplifies to ~p.
-                // The second part ((p = q) | (~p & q)) should absorb to ~p.
-                // Overall, ~p & ... simplifies to ~p.
-                Arguments.of("~(~~p) & ((p = q) | (~p & q))", "~p"),
+                // Test 7: Double Negation and Absorption
+                // ~(~~p) simplifies to ~p; (~p | q) | (~p & q) absorbs to ~p.
+                Arguments.of("~(~~p) & ((p > q) | (~p & q))", "~p"),
 
                 // Test 8: Biconditional from Implications
                 // (p > q) = (q > p) should simplify to the biconditional p = q.

@@ -96,6 +96,9 @@ public record NaryExpression(Token operator, List<Expression> operands) implemen
     // (p & q) | (p & r) = p & (q | r)
     private Expression reduceDistribution(Expression rNary, List<Expression> rOps) {
         char outerOp = operator.type() == TokenType.AND ? '&' : '|';
+        List<Expression> consumed = new ArrayList<>();
+        Expression distribution = null;
+
         for (Expression e : rOps) {
             for (Expression f : rOps) {
                 if (e.equals(f)) continue;
@@ -109,6 +112,8 @@ public record NaryExpression(Token operator, List<Expression> operands) implemen
                         for (Expression h : ops2) {
                             if (g.equals(h)) {
                                 distributed = g;
+                                consumed.add(e);
+                                consumed.add(f);
                                 break;
                             }
                         }
@@ -118,12 +123,22 @@ public record NaryExpression(Token operator, List<Expression> operands) implemen
                     Expression finalDistributed = distributed;
                     List<Expression> onto = Stream.concat(ops1.stream(), ops2.stream())
                             .filter(x -> !x.equals(finalDistributed)).toList();
-                    Expression r = new NaryExpression(Token.of(outerOp),
+                   distribution = new NaryExpression(Token.of(outerOp),
                             List.of(distributed, new BlockExpression(new NaryExpression(op1, onto))));
-                    System.out.println("Distribution: " + rNary + " -> " + r);
-                    return r;
+                   break;
                 }
             }
+            if (distribution != null) break;
+        }
+
+        if (distribution != null) {
+            List<Expression> undistributed = new ArrayList<>(rOps);
+            undistributed.removeAll(consumed);
+            if (undistributed.isEmpty()) return distribution;
+            undistributed.add(distribution);
+            Expression r = new NaryExpression(operator, undistributed);
+            System.out.println("Distribution: " + rNary + " -> " + r);
+            return r;
         }
         return null;
     }

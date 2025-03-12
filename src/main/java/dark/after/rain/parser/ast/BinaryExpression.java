@@ -54,6 +54,24 @@ public record BinaryExpression(Expression left, Token operator, Expression right
 
         // Biconditional: p = q = (p > q) & (q > p)
         if (step == ReductionStep.BICONDITIONAL && operator.type() == TokenType.EQUALS) {
+            if (reducedLeft.equals(reducedRight)) {
+                Expression r = new LiteralExpression('1');
+                System.out.println("Equality: " + this + " -> " + r);
+                return r;
+            }
+            // (p > q) = (q > p) = p = q
+            if (reducedLeft instanceof BlockExpression(Expression inner) &&
+                    inner instanceof BinaryExpression(Expression left1, Token op1, Expression right1) &&
+                    op1.type() == TokenType.IMPLIES &&
+                    reducedRight instanceof BlockExpression(Expression inner1) &&
+                    inner1 instanceof BinaryExpression(Expression left2, Token op2, Expression right2) &&
+                    op2.type() == TokenType.IMPLIES &&
+                    left1.equals(right2) && right1.equals(left2)) {
+                Expression r = new BinaryExpression(left1, Token.of('='), right1);
+                System.out.println("Biconditional: " + this + " -> " + r);
+                return r;
+            }
+
             Expression leftImpl = new BlockExpression(new BinaryExpression(reducedLeft,
                     Token.of('>'), reducedRight));
             Expression rightImpl = new BlockExpression(new BinaryExpression(reducedRight,

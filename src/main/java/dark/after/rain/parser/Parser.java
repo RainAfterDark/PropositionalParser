@@ -30,8 +30,8 @@ public abstract class Parser extends InputString {
             ReductionStep.NEGATION,
             ReductionStep.DE_MORGAN,
 
-            ReductionStep.IMPLICATION,
-            ReductionStep.BICONDITIONAL
+            ReductionStep.BICONDITIONAL,
+            ReductionStep.IMPLICATION
     );
 
     public final List<Token> tokens;
