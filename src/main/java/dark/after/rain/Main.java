@@ -9,9 +9,10 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         System.out.println("┃ Propositional Parser ┃ Enter an expression or ? for help ┃");
+        Scanner scanner;
         while (true) {
             System.out.print(": ");
-            Scanner scanner = new Scanner(System.in);
+            scanner = new Scanner(System.in);
             String input = scanner.nextLine();
             if (input.trim().isEmpty()) break;
 
@@ -44,5 +45,6 @@ public class Main {
                 System.out.println("Error: " + e.getMessage());
             }
         }
+        scanner.close();
     }
 }
