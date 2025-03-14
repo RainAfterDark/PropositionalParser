@@ -52,6 +52,11 @@ public record UnaryExpression(Token operator, Expression operand)
     }
 
     @Override
+    public List<Character> getVariables() {
+        return operand.getVariables();
+    }
+
+    @Override
     public String toString() {
         return String.format("%s%s", operator, operand);
     }

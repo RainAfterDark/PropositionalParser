@@ -1,5 +1,6 @@
 package dark.after.rain.parser.ast;
 
+import java.util.List;
 import java.util.Map;
 
 public record VariableExpression(char name) implements Expression {
@@ -11,6 +12,11 @@ public record VariableExpression(char name) implements Expression {
     @Override
     public Expression reduce(ReductionStep step) {
         return this;
+    }
+
+    @Override
+    public List<Character> getVariables() {
+        return List.of(name);
     }
 
     @Override

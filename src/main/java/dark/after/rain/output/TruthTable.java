@@ -51,14 +51,14 @@ public class TruthTable extends InputString {
     }
 
     public String generate() {
+        Expression root = parser.parse();
         StringBuilder sb = new StringBuilder("┃ ");
-        List<Character> vars = collectVariables();
+        List<Character> vars = root.getVariables();
         for (Character var : vars) {
             sb.append(var).append(" ");
         }
         sb.append("┃ ");
 
-        Expression root = parser.parse();
         List<Expression> expressions = collectSubexpressions(root);
         List<Integer> lengths = new ArrayList<>();
         for (Expression expr : expressions) {

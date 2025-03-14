@@ -1,6 +1,7 @@
 package dark.after.rain.parser.ast;
 
 import java.util.Map;
+import java.util.List;
 
 public record LiteralExpression(char value) implements Expression {
     public boolean isTrue() {
@@ -23,6 +24,11 @@ public record LiteralExpression(char value) implements Expression {
     @Override
     public Expression reduce(ReductionStep step) {
         return this;
+    }
+
+    @Override
+    public List<Character> getVariables() {
+        return List.of();
     }
 
     @Override

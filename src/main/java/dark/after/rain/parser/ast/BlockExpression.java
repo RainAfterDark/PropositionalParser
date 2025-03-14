@@ -1,5 +1,6 @@
 package dark.after.rain.parser.ast;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -16,6 +17,11 @@ public record BlockExpression(Expression inner) implements Expression {
                 reduced instanceof LiteralExpression)
             return reduced;
         return new BlockExpression(reduced);
+    }
+
+    @Override
+    public List<Character> getVariables() {
+        return inner.getVariables();
     }
 
     @Override
