@@ -10,11 +10,6 @@ public record VariableExpression(char name) implements Expression {
     }
 
     @Override
-    public Expression reduce(ReductionStep step) {
-        return this;
-    }
-
-    @Override
     public List<Character> collectVariables() {
         return List.of(name);
     }

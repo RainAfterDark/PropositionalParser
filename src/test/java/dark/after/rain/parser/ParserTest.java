@@ -25,69 +25,75 @@ public abstract class ParserTest {
     
     private static Stream<Arguments> provideSimplifyInput() {
         return Stream.of(
-                // Test 1: Double Negation, Idempotence, and Negation Laws
-                // (p & p) simplifies to p; (p & ~p) is false; ~~p simplifies to p;
-                // so the whole expression simplifies to p.
-                Arguments.of("(p & p) | (p & ~p) | (~~p)", "p"),
+                Arguments.of("p = q = r", "p = q = r"),
 
-                // Test 2: Distributive and Absorption Laws
-                // (p & q) | (p & ~q) factors to p & (q | ~q) which is p.
-                Arguments.of("(p & q) | (p & ~q)", "p"),
+                // Test 1: Double Negation - ~(~~p) should simplify to ~p.
+                Arguments.of("~(~~p)", "~p"),
 
-                // Test 3: De Morgan's and Absorption Laws
-                // ~(p | ~q) becomes ~p & q via De Morgan's.
-                // Then (~p & q) & (~p | q) absorbs to ~p & q.
-                Arguments.of("~(p | ~q) & (~p | q)", "~p & q"),
+                // Test 2: Tautology - p | ~p is always true (represented as 1).
+                Arguments.of("p | ~p", "1"),
 
-                // Test 4: Double Negation and Implication Conversion
-                // ~~(p > q) simplifies to (p > q), which is equivalent to ~p | q.
-                Arguments.of("~~(p > q)", "~p | q"),
+                // Test 3: Implication Conversion - p > q converts to ~p | q.
+                Arguments.of("p > q", "~p | q"),
 
-                // Test 5: Biconditional Idempotence
-                // (p = q) & (p = q) simplifies to just p = q.
-                Arguments.of("(p = q) & (p = q)", "p = q"),
+                // Test 4: Absorption/Distribution - ((p & q) | (p & ~q)) simplifies to p.
+                Arguments.of("((p & q) | (p & ~q))", "p"),
 
-                // Test 6: Tautology with Implication and Absorption
-                // (p > q) is ~p | q, and (q | ~q) is a tautology, so (~p | q) | (q | ~q) simplifies to 1.
-                Arguments.of("(p > q) | (q | ~q)", "1"),
+                // Test 5: Complex Nested Expression with Unaries -
+                // ((p & ~q) | (r & (q | ~q))) simplifies (via tautology in (q | ~q)) to (p & ~q) | r.
+                Arguments.of("((p & ~q) | (r & (q | ~q))) & ((p & ~q) | (r | ~(~r)))", "(p & ~q) | r"),
 
-                // Test 7: Double Negation and Absorption
-                // ~(~~p) simplifies to ~p; (~p | q) | (~p & q) absorbs to ~p.
-                Arguments.of("~(~~p) & ((p > q) | (~p & q))", "~p"),
-
-                // Test 8: Biconditional from Implications
-                // (p > q) = (q > p) should simplify to the biconditional p = q.
-                Arguments.of("(p > q) = (q > p)", "p = q"),
-
-                // Test 9: Tautology and Implication
-                // (p | ~p) and (q | ~q) are tautologies, so the expression simplifies to (p > q) which is ~p | q.
+                // Test 6: Tautology and Implication -
+                // ((p | ~p) & (q | ~q)) is a tautology, so the whole expression ((p | ~p) & (q | ~q)) & (p > q)
+                // simplifies to p > q, which in turn converts to ~p | q.
                 Arguments.of("((p | ~p) & (q | ~q)) & (p > q)", "~p | q"),
 
-                // Test 10: Distributing p over a Biconditional and its Negation
+                // Test 7: Mixing Negation and Implication -
+                // ~(~~p) simplifies to ~p, and (~p | q) | (~p & q) absorbs to ~p.
+                Arguments.of("~(~~p) & ((p > q) | (~p & q))", "~p"),
+
+                // Test 8: Complex Expression with Multiple Variables -
+                // ((p & q & r & s) | (p & q & r & ~s) | (p & q & ~r) | (~p & q)) simplifies by grouping
+                // to p & q (from the first three terms) combined with (~p & q) which absorbs to q.
+                Arguments.of("((p & q & r & s) | (p & q & r & ~s) | (p & q & ~r) | (~p & q))", "q"),
+
+                // Test 9: Tautology with Implication -
+                // (p > q) is ~p | q and (q | ~q) is a tautology; the disjunction simplifies to 1.
+                Arguments.of("(p > q) | (q | ~q)", "1"),
+
+                // Test 10: Biconditional Absorption -
                 // (p & (p = q)) | (p & ~(p = q)) factors p out and the disjunction is a tautology, so it simplifies to p.
                 Arguments.of("(p & (p = q)) | (p & ~(p = q))", "p"),
 
-                // Absorption Test
-                Arguments.of("p & r & (p | q)", "p & r"),
-                Arguments.of("~p & q & (~p | q)", "~p & q"),
-                Arguments.of("p | (p & q)", "p"),
+                // Test 11: Contradiction via absorption – (p & q) and (~p | ~q) cannot both be true.
+                Arguments.of("((p & q) & (~p | ~q))", "0"),
 
-                // Domination Test
-                Arguments.of("p | 1", "1"),
-                Arguments.of("p & 0", "0"),
+                // Test 12: Hypothetical syllogism – if p > q and q > r, then p > r is always true.
+                Arguments.of("((p > q) & (q > r)) > (p > r)", "1"),
 
-                // Negation Test
-                Arguments.of("p & ~p", "0"),
-                Arguments.of("p | ~p", "1"),
+                // Test 13: Identity law – (r & 0) is 0, so ((p & q) | (r & 0)) simplifies to p & q.
+                Arguments.of("((p & q) | (r & 0))", "p & q"),
 
-                // Block test
-                Arguments.of("p & (p & (p & p) & (p & p & p))", "p"),
+                // Test 14: Contradiction via conflicting terms – (p | q) and (~p & ~q) together yield a false statement.
+                Arguments.of("((p | q) & (~p & ~q))", "0"),
 
-                // De Morgan's Law Test
-                Arguments.of("~(p & q & r)", "~p | ~q | ~r"),
+                // Test 15: Consensus – ((p & q) | (p & ~q) | (~p & q)) factors to p | q.
+                Arguments.of("((p & q) | (p & ~q) | (~p & q))", "p | q"),
 
-                // Biconditional Test
-                Arguments.of("(~p | q) & (~q | p)", "p = q")
+                // Test 16: Extended hypothetical syllogism – a chain of implications is a tautology.
+                Arguments.of("((p > q) & (q > r) & (r > s)) > (p > s)", "1"),
+
+                // Test 17: Contrapositive equivalence – (p > q) is equivalent to (~q > ~p), hence a tautology.
+                Arguments.of("((p > q) = (~q > ~p))", "1"),
+
+                // Test 18: Factoring common terms – ((p & r) | (q & r)) factors to r & (p | q).
+                Arguments.of("((p & r) | (q & r))", "r & (p | q)"),
+
+                // Test 19: Consensus with contradiction – ((p & q) | (~p & q)) simplifies to q, but q & ~q yields 0.
+                Arguments.of("((p & q) | (~p & q)) & (~q)", "0"),
+
+                // Test 20: Grouping and elimination – combining minterms over 4 variables simplifies to q.
+                Arguments.of("((p & q & r) | (p & q & ~r)) | ((~p & q & r) | (~p & q & ~r))", "q")
         );
     }
 }

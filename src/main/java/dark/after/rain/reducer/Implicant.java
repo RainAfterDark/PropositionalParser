@@ -5,6 +5,7 @@ import dark.after.rain.parser.ast.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public record Implicant(int bits, int mask, int numVars) {
@@ -43,7 +44,6 @@ public record Implicant(int bits, int mask, int numVars) {
 
     // Convert this implicant into a logical expression using the provided variable ordering.
     public Expression toExpression(List<Character> variables) {
-        variables = variables.reversed();
         List<Expression> terms = new ArrayList<>();
         for (int i = 0; i < variables.size(); i++) {
             int bitMask = 1 << i;
@@ -56,9 +56,11 @@ public record Implicant(int bits, int mask, int numVars) {
                 }
             }
         }
+        if (terms.isEmpty()) return null;
+        terms = terms.stream().sorted(Comparator.comparing(
+                e -> e.toString().replaceAll("[^a-z]", ""))).toList();
         return terms.size() == 1 ? terms.getFirst() :
-                new BlockExpression(new NaryExpression(Token.of('&'),
-                        Collections.unmodifiableList(terms)));
+                new BlockExpression(new NaryExpression(Token.of('&'), terms));
     }
 
     @Override

@@ -22,11 +22,6 @@ public record LiteralExpression(char value) implements Expression {
     }
 
     @Override
-    public Expression reduce(ReductionStep step) {
-        return this;
-    }
-
-    @Override
     public List<Character> collectVariables() {
         return List.of();
     }

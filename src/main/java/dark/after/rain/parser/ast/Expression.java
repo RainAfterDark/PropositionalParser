@@ -10,7 +10,6 @@ import java.util.Map;
 
 public interface Expression {
     boolean evaluate(Map<Character, Boolean> context);
-    Expression reduce(ReductionStep step);
     List<Character> collectVariables();
 
     static private List<Expression> tryFlatten(Expression expr, TokenType type) {

@@ -3,11 +3,12 @@ package dark.after.rain.reducer;
 import dark.after.rain.lexer.Token;
 import dark.after.rain.parser.ast.BlockExpression;
 import dark.after.rain.parser.ast.Expression;
+import dark.after.rain.parser.ast.LiteralExpression;
 import dark.after.rain.parser.ast.NaryExpression;
 
 import java.util.*;
 
-public class QmcMinimizer {
+public class QmcMinimizer implements Minimizer {
     private final Expression expr;
     private final List<Character> vars;
 
@@ -24,7 +25,7 @@ public class QmcMinimizer {
             for (int j = 0; j < vars.size(); j++) {
                 int digit = vars.size() - j - 1;
                 boolean truth = ((i >> digit) & 1) == 1;
-                context.put(vars.get(j), truth);
+                context.put(vars.get(digit), truth);
             }
             if (expr.evaluate(context)) {
                 minTerms.add(i);
@@ -36,7 +37,7 @@ public class QmcMinimizer {
     private List<Set<Implicant>> generateEmptyGroups() {
         List<Set<Implicant>> groups = new ArrayList<>();
         for (int i = 0; i < vars.size() + 1; i++) {
-            groups.add(new HashSet<>());
+            groups.add(new LinkedHashSet<>());
         }
         return groups;
     }
@@ -51,7 +52,7 @@ public class QmcMinimizer {
     }
 
     private Set<Implicant> findPrimeImplicants(List<Set<Implicant>> groups) {
-        Set<Implicant> primeImplicants = new HashSet<>();
+        Set<Implicant> primeImplicants = new LinkedHashSet<>();
         boolean combinedOnce = true;
 
         while (combinedOnce) {
@@ -97,17 +98,22 @@ public class QmcMinimizer {
     }
 
     private Expression minimize(Set<Implicant> primeImplicants) {
+        if (primeImplicants.isEmpty()) return new LiteralExpression('0');
+
         List<Expression> terms = new ArrayList<>();
         for (Implicant implicant : primeImplicants) {
-            terms.add(implicant.toExpression(vars));
+            Expression term = implicant.toExpression(vars);
+            if (term != null) terms.add(term);
         }
+        if (terms.isEmpty()) return new LiteralExpression('1');
+
         Expression minimized = terms.size() == 1 ? terms.getFirst() :
                 new NaryExpression(Token.of('|'), Collections.unmodifiableList(terms));
-        if (minimized instanceof BlockExpression(Expression inner))
-            minimized = inner;
+        if (minimized instanceof BlockExpression(Expression inner)) minimized = inner;
         return minimized;
     }
 
+    @Override
     public Expression minimize() {
         Set<Integer> minTerms = collectMinTerms();
         System.out.println("MinTerms: " + minTerms);
