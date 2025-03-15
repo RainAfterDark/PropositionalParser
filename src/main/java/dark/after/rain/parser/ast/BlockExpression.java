@@ -20,8 +20,8 @@ public record BlockExpression(Expression inner) implements Expression {
     }
 
     @Override
-    public List<Character> getVariables() {
-        return inner.getVariables();
+    public List<Character> collectVariables() {
+        return inner.collectVariables();
     }
 
     @Override

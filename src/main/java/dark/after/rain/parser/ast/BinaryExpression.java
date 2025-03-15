@@ -86,10 +86,10 @@ public record BinaryExpression(Expression left, Token operator, Expression right
     }
 
     @Override
-    public List<Character> getVariables() {
+    public List<Character> collectVariables() {
         List<Character> variables = new ArrayList<>();
-        variables.addAll(left.getVariables());
-        variables.addAll(right.getVariables());
+        variables.addAll(left.collectVariables());
+        variables.addAll(right.collectVariables());
         return variables.stream().distinct().sorted().toList();
     }
 

@@ -11,7 +11,7 @@ import java.util.Map;
 public interface Expression {
     boolean evaluate(Map<Character, Boolean> context);
     Expression reduce(ReductionStep step);
-    List<Character> getVariables();
+    List<Character> collectVariables();
 
     static private List<Expression> tryFlatten(Expression expr, TokenType type) {
         if (expr instanceof BinaryExpression(Expression l, Token op, Expression r)) {

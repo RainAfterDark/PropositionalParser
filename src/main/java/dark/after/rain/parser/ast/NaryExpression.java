@@ -231,10 +231,10 @@ public record NaryExpression(Token operator, List<Expression> operands) implemen
     }
 
     @Override
-    public List<Character> getVariables() {
+    public List<Character> collectVariables() {
         List<Character> variables = new ArrayList<>();
         for (Expression e : operands) {
-            variables.addAll(e.getVariables());
+            variables.addAll(e.collectVariables());
         }
         return variables.stream().distinct().sorted().toList();
     }

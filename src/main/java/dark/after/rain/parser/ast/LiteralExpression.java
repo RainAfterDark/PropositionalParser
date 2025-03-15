@@ -27,7 +27,7 @@ public record LiteralExpression(char value) implements Expression {
     }
 
     @Override
-    public List<Character> getVariables() {
+    public List<Character> collectVariables() {
         return List.of();
     }
 

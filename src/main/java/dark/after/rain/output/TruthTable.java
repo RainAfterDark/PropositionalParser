@@ -1,8 +1,6 @@
 package dark.after.rain.output;
 
 import dark.after.rain.input.InputString;
-import dark.after.rain.lexer.Token;
-import dark.after.rain.lexer.TokenType;
 import dark.after.rain.parser.*;
 import dark.after.rain.parser.ast.*;
 
@@ -14,12 +12,6 @@ public class TruthTable extends InputString {
     public TruthTable(String input) {
         super(input);
         this.parser = new PrattParser(input);
-    }
-
-    private List<Character> collectVariables() {
-        return parser.tokens.stream()
-                .filter(t -> t.type() == TokenType.VARIABLE)
-                .map(Token::value).distinct().sorted().toList();
     }
 
     private void traverse(Expression expr, LinkedHashSet<Expression> exprSet) {
@@ -52,8 +44,9 @@ public class TruthTable extends InputString {
 
     public String generate() {
         Expression root = parser.parse();
+        List<Character> vars = root.collectVariables();
+
         StringBuilder sb = new StringBuilder("┃ ");
-        List<Character> vars = root.getVariables();
         for (Character var : vars) {
             sb.append(var).append(" ");
         }
