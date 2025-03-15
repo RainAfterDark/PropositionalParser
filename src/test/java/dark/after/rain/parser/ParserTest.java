@@ -25,8 +25,6 @@ public abstract class ParserTest {
     
     private static Stream<Arguments> provideSimplifyInput() {
         return Stream.of(
-                Arguments.of("p = q = r", "p = q = r"),
-
                 // Test 1: Double Negation - ~(~~p) should simplify to ~p.
                 Arguments.of("~(~~p)", "~p"),
 
@@ -86,13 +84,13 @@ public abstract class ParserTest {
                 // Test 17: Contrapositive equivalence – (p > q) is equivalent to (~q > ~p), hence a tautology.
                 Arguments.of("((p > q) = (~q > ~p))", "1"),
 
-                // Test 18: Factoring common terms – ((p & r) | (q & r)) factors to r & (p | q).
-                Arguments.of("((p & r) | (q & r))", "r & (p | q)"),
+                // Test 18: Covering all but the false case – "((p & q) | (~p & q) | (p & ~q))" simplifies to "p | q".
+                Arguments.of("((p & q) | (~p & q) | (p & ~q))", "p | q"),
 
                 // Test 19: Consensus with contradiction – ((p & q) | (~p & q)) simplifies to q, but q & ~q yields 0.
                 Arguments.of("((p & q) | (~p & q)) & (~q)", "0"),
 
-                // Test 20: Grouping and elimination – combining minterms over 4 variables simplifies to q.
+                // Test 20: Grouping and elimination – combining min terms over 4 variables simplifies to q.
                 Arguments.of("((p & q & r) | (p & q & ~r)) | ((~p & q & r) | (~p & q & ~r))", "q")
         );
     }

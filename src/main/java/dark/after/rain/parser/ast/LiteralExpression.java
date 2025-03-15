@@ -12,10 +12,6 @@ public record LiteralExpression(char value) implements Expression {
         };
     }
 
-    public boolean isFalse() {
-        return !isTrue();
-    }
-
     @Override
     public boolean evaluate(Map<Character, Boolean> context) {
         return isTrue();

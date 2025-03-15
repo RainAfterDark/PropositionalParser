@@ -8,7 +8,7 @@ import dark.after.rain.parser.ast.NaryExpression;
 
 import java.util.*;
 
-public class QmcMinimizer implements Minimizer {
+public class QmcMinimizer {
     private final Expression expr;
     private final List<Character> vars;
 
@@ -113,7 +113,6 @@ public class QmcMinimizer implements Minimizer {
         return minimized;
     }
 
-    @Override
     public Expression minimize() {
         Set<Integer> minTerms = collectMinTerms();
         System.out.println("MinTerms: " + minTerms);

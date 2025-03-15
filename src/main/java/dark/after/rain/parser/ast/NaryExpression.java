@@ -1,10 +1,8 @@
 package dark.after.rain.parser.ast;
 
 import dark.after.rain.lexer.Token;
-import dark.after.rain.lexer.TokenType;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 public record NaryExpression(Token operator, List<Expression> operands) implements Expression {
     @Override
