@@ -6,7 +6,12 @@
 
     <groupId>dark.after.rain</groupId>
     <artifactId>PropositionalParser</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
+    <description>Simple program for generating truth tables from propositional logic expressions.</description>
+    <organization>
+        <name>RainAfterDark</name>
+    </organization>
+    <inceptionYear>2025</inceptionYear>
 
     <properties>
         <maven.compiler.source>23</maven.compiler.source>
@@ -27,6 +32,7 @@
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
+                    <outputDirectory>${project.build.directory}\assembly</outputDirectory>
                 </configuration>
                 <executions>
                     <execution>
@@ -39,25 +45,27 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>com.akathist.maven.plugins.launch4j</groupId>
-                <artifactId>launch4j-maven-plugin</artifactId>
-                <version>2.5.3</version>
+                <groupId>com.github.akman</groupId>
+                <artifactId>jpackage-maven-plugin</artifactId>
+                <version>0.1.5</version>
                 <configuration>
-                    <outfile>target/PropositionalParser.exe</outfile>
-                    <jar>target/PropositionalParser-1.0-SNAPSHOT-jar-with-dependencies.jar</jar>
-                    <dontWrapJar>false</dontWrapJar>
-                    <headerType>console</headerType>
-                    <jre>
-                        <minVersion>23.0</minVersion>
-                    </jre>
-                    <stayAlive>true</stayAlive>
+                    <input>${project.build.directory}\assembly</input>
+                    <name>${project.artifactId}</name>
+                    <vendor>${project.organization.name}</vendor>
+                    <description>${project.description}</description>
+                    <type>IMAGE</type>
+                    <appversion>${project.version}</appversion>
+                    <mainclass>dark.after.rain.Main</mainclass>
+                    <mainjar>${project.artifactId}-${project.version}-jar-with-dependencies.jar</mainjar>
+                    <verbose>true</verbose>
+                    <winconsole>true</winconsole>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>l4j</id>
+                        <id>make-image</id>
                         <phase>package</phase>
                         <goals>
-                            <goal>launch4j</goal>
+                            <goal>jpackage</goal>
                         </goals>
                     </execution>
                 </executions>
