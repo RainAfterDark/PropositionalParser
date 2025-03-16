@@ -1,8 +1,8 @@
 package dark.after.rain.parser;
 
+import dark.after.rain.ast.*;
 import dark.after.rain.lexer.Token;
 import dark.after.rain.lexer.TokenType;
-import dark.after.rain.parser.ast.*;
 
 // Recursive Descent Parser
 public class RDParser extends Parser {

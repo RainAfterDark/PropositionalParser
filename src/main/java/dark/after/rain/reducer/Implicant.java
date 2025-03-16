@@ -1,7 +1,7 @@
 package dark.after.rain.reducer;
 
+import dark.after.rain.ast.*;
 import dark.after.rain.lexer.Token;
-import dark.after.rain.parser.ast.*;
 
 import java.util.ArrayList;
 import java.util.Comparator;

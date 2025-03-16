@@ -1,10 +1,10 @@
 package dark.after.rain.reducer;
 
+import dark.after.rain.ast.BlockExpression;
+import dark.after.rain.ast.Expression;
+import dark.after.rain.ast.LiteralExpression;
+import dark.after.rain.ast.NaryExpression;
 import dark.after.rain.lexer.Token;
-import dark.after.rain.parser.ast.BlockExpression;
-import dark.after.rain.parser.ast.Expression;
-import dark.after.rain.parser.ast.LiteralExpression;
-import dark.after.rain.parser.ast.NaryExpression;
 
 import java.util.*;
 
@@ -115,11 +115,8 @@ public class QmcMinimizer {
 
     public Expression minimize() {
         Set<Integer> minTerms = collectMinTerms();
-        System.out.println("MinTerms: " + minTerms);
         List<Set<Implicant>> groups = groupImplicants(minTerms);
-        System.out.println("Groups: " + groups);
         Set<Implicant> primeImplicants = findPrimeImplicants(groups);
-        System.out.println("Prime Implicants: " + primeImplicants);
         return minimize(primeImplicants);
     }
 }

@@ -1,8 +1,10 @@
-package dark.after.rain.parser.ast;
+package dark.after.rain.ast;
 
 import dark.after.rain.lexer.Token;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public record NaryExpression(Token operator, List<Expression> operands) implements Expression {
     @Override
@@ -27,6 +29,6 @@ public record NaryExpression(Token operator, List<Expression> operands) implemen
     public String toString() {
         return String.format("%s",
                 String.join(" " + operator.value() + " ",
-                operands.stream().map(Object::toString).toList()));
+                        operands.stream().map(Object::toString).toList()));
     }
 }

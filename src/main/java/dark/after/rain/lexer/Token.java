@@ -3,6 +3,10 @@ package dark.after.rain.lexer;
 import java.util.Objects;
 
 public record Token(TokenType type, char value, int index) {
+    public static Token of(char value) {
+        return new Token(TokenType.valueOf(value), value, -1);
+    }
+
     @Override
     public String toString() {
         return String.valueOf(value);
@@ -17,9 +21,5 @@ public record Token(TokenType type, char value, int index) {
     @Override
     public int hashCode() {
         return Objects.hash(type(), value());
-    }
-
-    public static Token of(char value) {
-        return new Token(TokenType.valueOf(value), value, -1);
     }
 }

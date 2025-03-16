@@ -1,4 +1,4 @@
-package dark.after.rain.parser.ast;
+package dark.after.rain.ast;
 
 import dark.after.rain.lexer.Token;
 

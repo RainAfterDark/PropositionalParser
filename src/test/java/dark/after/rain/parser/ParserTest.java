@@ -1,28 +1,16 @@
 package dark.after.rain.parser;
 
-import dark.after.rain.parser.ast.Expression;
+import dark.after.rain.ast.Expression;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public abstract class ParserTest {
-    protected abstract Parser getParser(String input);
-    
-    @ParameterizedTest
-    @MethodSource("provideSimplifyInput")
-    void testSimplify(String input, String expected) {
-        System.out.println("\nInput: " + input);
-        Parser parser = getParser(input);
-        Expression expr = parser.parseReduced();
-        System.out.println("Reduced: " + expr);
-        assertNotNull(expr);
-        assertEquals(expected, expr.toString());
-    }
-    
     private static Stream<Arguments> provideSimplifyInput() {
         return Stream.of(
                 // Test 1: Double Negation - ~(~~p) should simplify to ~p.
@@ -93,5 +81,18 @@ public abstract class ParserTest {
                 // Test 20: Grouping and elimination – combining min terms over 4 variables simplifies to q.
                 Arguments.of("((p & q & r) | (p & q & ~r)) | ((~p & q & r) | (~p & q & ~r))", "q")
         );
+    }
+
+    protected abstract Parser getParser(String input);
+
+    @ParameterizedTest
+    @MethodSource("provideSimplifyInput")
+    void testSimplify(String input, String expected) {
+        System.out.println("\nInput: " + input);
+        Parser parser = getParser(input);
+        Expression expr = parser.parseReduced();
+        System.out.println("Reduced: " + expr);
+        assertNotNull(expr);
+        assertEquals(expected, expr.toString());
     }
 }

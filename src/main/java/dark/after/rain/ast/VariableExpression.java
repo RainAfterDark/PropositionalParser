@@ -1,4 +1,4 @@
-package dark.after.rain.parser.ast;
+package dark.after.rain.ast;
 
 import java.util.List;
 import java.util.Map;

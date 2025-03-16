@@ -1,8 +1,8 @@
 package dark.after.rain.parser;
 
+import dark.after.rain.ast.*;
 import dark.after.rain.lexer.Token;
 import dark.after.rain.lexer.TokenType;
-import dark.after.rain.parser.ast.*;
 
 // Top-Down Operator Precedence Parser
 public class PrattParser extends Parser {
@@ -31,12 +31,12 @@ public class PrattParser extends Parser {
     // of having to write chained functions with recursive descent
     private int getBindingPower(TokenType type) {
         return switch (type) {
-            case NOT     -> 5;
-            case AND     -> 4;
-            case OR      -> 3;
+            case NOT -> 5;
+            case AND -> 4;
+            case OR -> 3;
             case IMPLIES -> 2;
-            case EQUALS  -> 1;
-            default      -> 0;
+            case EQUALS -> 1;
+            default -> 0;
         };
     }
 

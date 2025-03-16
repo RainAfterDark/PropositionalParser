@@ -1,10 +1,10 @@
 package dark.after.rain.parser;
 
+import dark.after.rain.ast.Expression;
 import dark.after.rain.input.InputString;
 import dark.after.rain.lexer.Token;
 import dark.after.rain.lexer.TokenType;
 import dark.after.rain.lexer.Tokenizer;
-import dark.after.rain.parser.ast.Expression;
 import dark.after.rain.reducer.QmcMinimizer;
 
 import java.util.List;

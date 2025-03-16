@@ -1,8 +1,9 @@
 package dark.after.rain.output;
 
+import dark.after.rain.ast.*;
 import dark.after.rain.input.InputString;
-import dark.after.rain.parser.*;
-import dark.after.rain.parser.ast.*;
+import dark.after.rain.parser.Parser;
+import dark.after.rain.parser.PrattParser;
 
 import java.util.*;
 
@@ -26,7 +27,8 @@ public class TruthTable extends InputString {
                 exprSet.add(binary);
             }
             case BlockExpression block -> traverse(block.inner(), exprSet);
-            case VariableExpression _, LiteralExpression _ -> {}
+            case VariableExpression _, LiteralExpression _ -> {
+            }
             case null, default -> throw new
                     RuntimeException("Unexpected expression type: " + expr);
         }
@@ -45,6 +47,7 @@ public class TruthTable extends InputString {
     public String generate() {
         Expression root = parser.parse();
         List<Character> vars = root.collectVariables();
+        if (vars.isEmpty()) return root + " = " + root;
 
         StringBuilder sb = new StringBuilder("┃ ");
         for (Character var : vars) {
@@ -53,6 +56,8 @@ public class TruthTable extends InputString {
         sb.append("┃ ");
 
         List<Expression> expressions = collectSubexpressions(root);
+        if (expressions.isEmpty()) return root + " = " + root;
+
         List<Integer> lengths = new ArrayList<>();
         for (Expression expr : expressions) {
             lengths.add(expr.toString().length());
@@ -88,10 +93,10 @@ public class TruthTable extends InputString {
             sb.append("\n");
         }
 
-        sb.append("The expression is a ");
-        if (tautology) sb.append("tautology");
-        else if (contradiction) sb.append("contradiction");
-        else sb.append("contingency");
+        sb.append("THE EXPRESSION IS A ");
+        if (tautology) sb.append("TAUTOLOGY");
+        else if (contradiction) sb.append("CONTRADICTION");
+        else sb.append("CONTINGENCY");
         return sb.toString();
     }
 }
