@@ -33,26 +33,16 @@ public class Console {
         }
     }
 
-    public static void print(String message) {
-        if (terminal == null) init();
-        highlighter.highlight(message).print(terminal);
-    }
-
     public static void println(String message) {
         if (terminal == null) init();
         highlighter.highlight(message).println(terminal);
-    }
-
-    public static void printf(String format, Object... args) {
-        if (terminal == null) init();
-        highlighter.highlight(String.format(format, args)).print(terminal);
     }
 
     public static void error(String message) {
         if (terminal == null) init();
         AttributedStringBuilder builder = new AttributedStringBuilder();
         builder.append("Error: " + message,
-                AttributedStyle.DEFAULT.foreground(AttributedStyle.RED));
+                AttributedStyle.DEFAULT.foreground(AttributedStyle.BRIGHT + AttributedStyle.RED));
         builder.toAttributedString().println(terminal);
     }
 
@@ -82,7 +72,6 @@ public class Console {
             input = prefix.getUnPrefixedInput();
             try {
                 if (prefix.shouldSimplify()) {
-                    String original = input;
                     input = new PrattParser(input).parseReduced().toString();
                     Console.println("MINIMIZED: " + input);
                 }
