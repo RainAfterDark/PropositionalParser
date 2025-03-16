@@ -58,8 +58,8 @@ public class Console {
                 Console.println("""
                         USAGE: <PREFIX> <EXPRESSION>
                         PREFIXES: (CAN ALSO BE AFFIXED) \t  ┃ OPERATORS:
-                        \t?: HELP                           ┃     NOT: ~
-                        \t$: MINIFY EXPRESSION              ┃     AND: &
+                        \t?: SHOW THIS MESSAGE              ┃     NOT: ~
+                        \t$: MINIFY EXPRESSION (QMC)        ┃     AND: &
                         \t                                  ┃      OR: |
                         \t                                  ┃ IMPLIES: >
                         \t                                  ┃  EQUALS: =
