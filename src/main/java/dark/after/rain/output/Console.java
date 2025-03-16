@@ -46,39 +46,8 @@ public class Console {
         builder.toAttributedString().println(terminal);
     }
 
-    public static void inputLoop() {
-        if (terminal == null) init();
-        Console.println("┃ PROPOSITIONAL PARSER ┃ ENTER AN EXPRESSION OR ? FOR HELP ┃");
-
-        while (true) {
-            String input = reader.readLine(":: ");
-            if (input.trim().isEmpty()) break;
-            PrefixArgs prefix = new PrefixArgs(input);
-            if (prefix.shouldShowHelp()) {
-                Console.println("""
-                        USAGE: <PREFIX> <EXPRESSION>
-                        PREFIXES: (CAN ALSO BE AFFIXED) \t  ┃ OPERATORS:
-                        \t?: SHOW THIS MESSAGE              ┃     NOT: ~
-                        \t$: MINIFY EXPRESSION (QMC)        ┃     AND: &
-                        \t                                  ┃      OR: |
-                        \t                                  ┃ IMPLIES: >
-                        \t                                  ┃  EQUALS: =
-                        VARIABLES: a-z (CASE INSENSITIVE)
-                        LITERALS: 0 (FALSE), 1 (TRUE)
-                        ENTER EMPTY LINE TO EXIT""");
-                continue;
-            }
-
-            input = prefix.getUnPrefixedInput();
-            try {
-                if (prefix.shouldSimplify()) {
-                    input = new PrattParser(input).parseReduced().toString();
-                    Console.println("MINIMIZED: " + input);
-                }
-                Console.println(new TruthTable(input).generate());
-            } catch (Exception e) {
-                Console.error(e.getMessage());
-            }
-        }
+    public static String readLine(String prompt) {
+        if (reader == null) init();
+        return reader.readLine(prompt);
     }
 }
