@@ -88,10 +88,10 @@ public abstract class ParserTest {
     @ParameterizedTest
     @MethodSource("provideSimplifyInput")
     void testSimplify(String input, String expected) {
-        System.out.println("\nInput: " + input);
+        System.out.println("\nINPUT: " + input);
         Parser parser = getParser(input);
         Expression expr = parser.parseReduced();
-        System.out.println("Reduced: " + expr);
+        System.out.println("REDUCED: " + expr);
         assertNotNull(expr);
         assertEquals(expected, expr.toString());
     }

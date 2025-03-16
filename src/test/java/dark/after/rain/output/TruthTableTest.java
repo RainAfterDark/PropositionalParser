@@ -115,8 +115,10 @@ public class TruthTableTest {
     @ParameterizedTest
     @MethodSource("provideGenerateInput")
     void testGenerate(String input, String expected) {
-        TruthTable table = new TruthTable(input);
-        assertEquals(expected.trim(), table.generate());
+        System.out.println("\nINPUT: " + input);
+        String table = new TruthTable(input).generate();
+        System.out.println("TRUTH TABLE:\n" + expected);
+        assertEquals(expected.trim(), table.trim());
     }
 
 }
