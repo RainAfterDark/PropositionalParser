@@ -14,15 +14,15 @@ public class Main {
             PrefixArgs prefix = new PrefixArgs(input);
             if (prefix.shouldShowHelp()) {
                 Console.println("""
-                        USAGE: <PREFIX> <EXPRESSION>
-                        PREFIXES: (CAN ALSO BE AFFIXED) \t  ┃ OPERATORS:
-                        \t?: SHOW THIS MESSAGE              ┃     NOT: ~
-                        \t$: MINIFY EXPRESSION (QMC)        ┃     AND: &
+                        USAGE: (prefix) (expression)
+                        PREFIXES: (can also be affixed) \t  ┃ OPERATORS:
+                        \t?: show this message              ┃     NOT: ~
+                        \t$: minify expression (QMC)        ┃     AND: &
                         \t                                  ┃      OR: |
                         \t                                  ┃ IMPLIES: >
                         \t                                  ┃  EQUALS: =
-                        VARIABLES: a-z (CASE INSENSITIVE)
-                        LITERALS: 0 (FALSE), 1 (TRUE)
+                        VARIABLES: a-z (case insensitive, will lowercase)
+                        LITERALS: 0 (false), 1 (true)
                         ENTER EMPTY LINE TO EXIT""");
                 continue;
             }
