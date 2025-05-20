@@ -1,10 +1,10 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Main" type="Application" factoryName="Application">
-    <option name="MAIN_CLASS_NAME" value="dark.after.rain.Main" />
+    <option name="MAIN_CLASS_NAME" value="com.logic.Main" />
     <module name="PropositionalParser" />
     <extension name="coverage">
       <pattern>
-        <option name="PATTERN" value="dark.after.rain.*" />
+        <option name="PATTERN" value="com.logic.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>

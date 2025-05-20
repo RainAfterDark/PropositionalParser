@@ -4,19 +4,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>dark.after.rain</groupId>
+    <groupId>com.logic</groupId>
     <artifactId>PropositionalParser</artifactId>
     <version>1.0</version>
     <description>Simple program for generating truth tables from propositional logic expressions.</description>
-    <organization>
-        <name>RainAfterDark</name>
-    </organization>
     <inceptionYear>2025</inceptionYear>
 
     <properties>
-        <maven.compiler.source>23</maven.compiler.source>
-        <maven.compiler.target>23</maven.compiler.target>
-        <maven.compiler.release>23</maven.compiler.release>
+        <maven.compiler.source>24</maven.compiler.source>
+        <maven.compiler.target>24</maven.compiler.target>
+        <maven.compiler.release>24</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -27,7 +24,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>dark.after.rain.Main</mainClass>
+                            <mainClass>com.logic.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
@@ -56,7 +53,7 @@
                     <description>${project.description}</description>
                     <type>IMAGE</type>
                     <appversion>${project.version}</appversion>
-                    <mainclass>dark.after.rain.Main</mainclass>
+                    <mainclass>com.logic.Main</mainclass>
                     <mainjar>${project.artifactId}-${project.version}-jar-with-dependencies.jar</mainjar>
                     <verbose>true</verbose>
                     <winconsole>true</winconsole>
