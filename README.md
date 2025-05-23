@@ -5,7 +5,7 @@ from propositional logic expressions in Java.
 
 ## Prerequisites
 
-- JDK **24** or higher
+- JDK **23** or higher
 - IntelliJ IDEA (optional, but recommended for development)
 
 ## Build

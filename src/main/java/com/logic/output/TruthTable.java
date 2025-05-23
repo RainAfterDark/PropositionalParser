@@ -7,14 +7,35 @@ import com.logic.parser.PrattParser;
 
 import java.util.*;
 
+/**
+ * Generates a truth table for a propositional logic expression.
+ * The truth table shows the evaluation of the expression and all its subexpressions
+ * for all possible combinations of variable values.
+ * <p>
+ * The class also determines whether the expression is a tautology (always true),
+ * a contradiction (always false), or a contingency (sometimes true, sometimes false).
+ */
 public class TruthTable extends InputString {
     private final Parser parser;
 
+    /**
+     * Constructs a TruthTable for the given propositional logic expression.
+     *
+     * @param input The propositional logic expression to generate a truth table for
+     */
     public TruthTable(String input) {
         super(input);
         this.parser = new PrattParser(input);
     }
 
+    /**
+     * Recursively traverses an expression tree to collect all subexpressions.
+     * The subexpressions are added to the provided set in post-order traversal.
+     *
+     * @param expr    The expression to traverse
+     * @param exprSet The set to collect subexpressions into
+     * @throws RuntimeException if an unexpected expression type is encountered
+     */
     private void traverse(Expression expr, LinkedHashSet<Expression> exprSet) {
         switch (expr) {
             case UnaryExpression unary -> {
@@ -28,18 +49,32 @@ public class TruthTable extends InputString {
             }
             case BlockExpression block -> traverse(block.inner(), exprSet);
             case VariableExpression _, LiteralExpression _ -> {
+                // Variables and literals are leaf nodes, no traversal needed
             }
             case null, default -> throw new
                     RuntimeException("Unexpected expression type: " + expr);
         }
     }
 
+    /**
+     * Collects all subexpressions from an expression tree.
+     * The subexpressions are returned in post-order traversal order.
+     *
+     * @param root The root expression of the tree
+     * @return A list of all subexpressions in the tree
+     */
     private List<Expression> collectSubexpressions(Expression root) {
         LinkedHashSet<Expression> subExpressions = new LinkedHashSet<>();
         traverse(root, subExpressions);
         return subExpressions.stream().toList();
     }
 
+    /**
+     * Converts a boolean value to its character representation.
+     *
+     * @param truth The boolean value to convert
+     * @return "1" for true, "0" for false
+     */
     private String boolToChar(boolean truth) {
         return truth ? "1" : "0";
     }

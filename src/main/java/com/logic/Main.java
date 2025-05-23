@@ -5,7 +5,19 @@ import com.logic.output.Console;
 import com.logic.output.TruthTable;
 import com.logic.parser.PrattParser;
 
+/**
+ * Main application class for the Propositional Parser.
+ * This application allows users to input propositional logic expressions,
+ * generate truth tables, and minimize expressions using the Quine-McCluskey algorithm.
+ */
 public class Main {
+    /**
+     * Entry point for the Propositional Parser application.
+     * Provides an interactive command-line interface for parsing and evaluating
+     * propositional logic expressions.
+     *
+     * @param args Command line arguments (not used)
+     */
     public static void main(String[] args) {
         Console.println("┃ PROPOSITIONAL PARSER ┃ ENTER AN EXPRESSION OR ? FOR HELP ┃");
         while (true) {
