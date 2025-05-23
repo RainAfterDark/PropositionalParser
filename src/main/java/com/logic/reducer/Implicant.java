@@ -8,9 +8,28 @@ import java.util.Comparator;
 import java.util.List;
 
 public record Implicant(int bits, int mask, int numVars) {
-    // Create an implicant from a single minTerm (no don't care bits yet)
+    // Create an implicant from a single minterm (no don't care bits, yet)
     public static Implicant fromMinTerm(int minTerm, int numVars) {
         return new Implicant(minTerm, 0, numVars);
+    }
+
+    // Check if this implicant covers the given minterm
+    public boolean covers(int minTerm) {
+        // For each bit position that is not a don't care (mask bit is 0),
+        // the implicant's bit must match the minterm's bit
+        for (int i = 0; i < numVars; i++) {
+            int bitMask = 1 << i;
+            // If this bit position is not a don't care (mask bit is 0)
+            if ((mask & bitMask) == 0) {
+                // Check if the bits match at this position
+                boolean implicantBit = (bits & bitMask) != 0;
+                boolean mintermBit = (minTerm & bitMask) != 0;
+                if (implicantBit != mintermBit) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     // Count ones in fixed bits (ignoring don't care positions)

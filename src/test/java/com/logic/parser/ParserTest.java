@@ -44,7 +44,7 @@ public abstract class ParserTest {
                 Arguments.of("((p & q & r & s) | (p & q & r & ~s) | (p & q & ~r) | (~p & q))", "q"),
 
                 // Test 9: Tautology with Implication -
-                // (p > q) is ~p | q and (q | ~q) is a tautology; the disjunction simplifies to 1.
+                // (p > q) is ~p | q & (q | ~q) is a tautology; the disjunction simplifies to 1.
                 Arguments.of("(p > q) | (q | ~q)", "1"),
 
                 // Test 10: Biconditional Absorption -
@@ -79,7 +79,10 @@ public abstract class ParserTest {
                 Arguments.of("((p & q) | (~p & q)) & (~q)", "0"),
 
                 // Test 20: Grouping and elimination – combining min terms over 4 variables simplifies to q.
-                Arguments.of("((p & q & r) | (p & q & ~r)) | ((~p & q & r) | (~p & q & ~r))", "q")
+                Arguments.of("((p & q & r) | (p & q & ~r)) | ((~p & q & r) | (~p & q & ~r))", "q"),
+
+                // Test 22: Stress test using 12 characters (a-l) - "a" is factored out and the rest forms a tautology.
+                Arguments.of("(a & (b | c | d | e | f | g | h | i | j | k | l)) | (a & ~(b | c | d | e | f | g | h | i | j | k | l))", "a")
         );
     }
 
