@@ -6,6 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * An expression with an arbitrary number of operands.
+ * A better abstraction for associativity compared to chains of {@link BinaryExpression}.
+ *
+ * @param operator The expression operator
+ * @param operands The list of operands
+ */
 public record NaryExpression(Token operator, List<Expression> operands) implements Expression {
     @Override
     public boolean evaluate(Map<Character, Boolean> context) {

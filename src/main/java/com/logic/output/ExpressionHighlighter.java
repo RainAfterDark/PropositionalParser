@@ -6,6 +6,9 @@ import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStringBuilder;
 import org.jline.utils.AttributedStyle;
 
+/**
+ * Custom syntax highlighter for expressions.
+ */
 public class ExpressionHighlighter extends DefaultHighlighter {
     private boolean isOperator(char ch) {
         return ch == '~' || ch == '&' || ch == '|' || ch == '>' || ch == '=';

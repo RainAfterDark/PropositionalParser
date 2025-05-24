@@ -99,6 +99,7 @@ public class QmcMinimizer {
         Set<Implicant> primeImplicants = new LinkedHashSet<>();
         boolean combinedOnce = true;
 
+        // Run passes until no more combinations are possible
         while (combinedOnce) {
             combinedOnce = false;
             List<Set<Implicant>> nextGroups = generateEmptyGroups();
@@ -113,9 +114,9 @@ public class QmcMinimizer {
                     for (Implicant other : group2) {
                         if (implicant.canCombine(other)) {
                             Implicant combined = implicant.combine(other);
-                            int ones = combined.countOnes();
+                            int ones = combined.countOnes(); // Group by number of ones
                             nextGroups.get(ones).add(combined);
-                            consumed.add(implicant);
+                            consumed.add(implicant); // Mark combined implicants as consumed
                             consumed.add(other);
                             combinedOnce = true;
                         }

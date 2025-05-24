@@ -1,5 +1,8 @@
 package com.logic.input;
 
+/**
+ * Helper class for handling input prefixes.
+ */
 public class PrefixArgs extends InputString {
     private final boolean showHelp;
     private final boolean simplify;

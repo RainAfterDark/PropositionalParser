@@ -6,6 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * An expression with two operands (left and right).
+ *
+ * @param left     The left operand
+ * @param operator The expression operator
+ * @param right    The right operand
+ */
 public record BinaryExpression(Expression left, Token operator, Expression right)
         implements Expression {
     @Override

@@ -3,6 +3,11 @@ package com.logic.ast;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A literal value expression (either true or false, denoted as 1 and 0, respectively)
+ *
+ * @param value The literal value
+ */
 public record LiteralExpression(char value) implements Expression {
     public boolean isTrue() {
         return switch (value) {

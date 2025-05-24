@@ -4,6 +4,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * An expression wrapped in parentheses.
+ *
+ * @param inner The inner expression
+ */
 public record BlockExpression(Expression inner) implements Expression {
     @Override
     public boolean evaluate(Map<Character, Boolean> context) {

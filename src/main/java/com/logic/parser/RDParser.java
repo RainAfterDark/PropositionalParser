@@ -4,7 +4,12 @@ import com.logic.ast.*;
 import com.logic.lexer.Token;
 import com.logic.lexer.TokenType;
 
-// Recursive Descent Parser
+/**
+ * Recursive Descent Parser
+ *
+ * @deprecated Use the {@link PrattParser} implementation instead.
+ */
+@Deprecated
 public class RDParser extends Parser {
     private int pos = 0;
 

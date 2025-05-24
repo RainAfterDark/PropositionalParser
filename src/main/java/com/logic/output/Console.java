@@ -10,6 +10,9 @@ import org.jline.utils.AttributedStyle;
 
 import java.io.IOException;
 
+/**
+ * Custom console implementation using JLine
+ */
 public class Console {
     private static final ExpressionHighlighter highlighter = new ExpressionHighlighter();
     private static Terminal terminal;
@@ -17,6 +20,8 @@ public class Console {
 
     public static void init() {
         if (terminal != null && reader != null) return;
+        // This does not create a system console for IDEA.
+        // Only works in the produced executable.
         try {
             terminal = TerminalBuilder.builder()
                     .system(true)
