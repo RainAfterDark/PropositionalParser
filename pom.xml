@@ -6,7 +6,7 @@
 
     <groupId>com.logic</groupId>
     <artifactId>PropositionalParser</artifactId>
-    <version>1.0</version>
+    <version>1.1</version>
     <description>Simple program for generating truth tables from propositional logic expressions.</description>
     <inceptionYear>2025</inceptionYear>
 
@@ -57,6 +57,7 @@
                     <mainjar>${project.artifactId}-${project.version}-jar-with-dependencies.jar</mainjar>
                     <verbose>true</verbose>
                     <winconsole>true</winconsole>
+                    <javaoptions>--enable-native-access=ALL-UNNAMED</javaoptions>
                 </configuration>
                 <executions>
                     <execution>
